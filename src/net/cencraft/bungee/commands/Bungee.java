@@ -1,5 +1,7 @@
 package net.cencraft.bungee.commands;
 
+import net.cencraft.bungee.util.Util;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +16,12 @@ public class Bungee implements CommandExecutor {
 		if (commandLabel.equalsIgnoreCase("runner")) {
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("start")) {
-					//TODO make start for arena.
+					Util.sendMessage(p, "Incorrect syntax. use /bungee help");
+					return false;
+				}
+				if (args[0].equalsIgnoreCase("help")) {
+					Util.sendMessage(p, "Will finish later :P Hope you didn't need help!");
+					return false;
 				}
 			}
 		}
