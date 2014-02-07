@@ -26,7 +26,7 @@ private boolean inGame = false; //Boolean to determine if an Arena is ingame or 
 
 
 //Now for a Constructor:
-public Arena (String arenaName, Location joinLocation, Location startLocation, Location endLocation, int maxPlayers) { //So basicly: Arena myArena = new Arena("My Arena", joinLocation, startLocation, endLocation, 17)
+public Arena (String arenaName, Location startLocation, Location endLocation, int maxPlayers) { //So basicly: Arena myArena = new Arena("My Arena", joinLocation, startLocation, endLocation, 17)
 //Lets initalize it all:
 this.name = arenaName;
 this.startLocation = startLocation;

@@ -52,6 +52,7 @@ public class ArenaManager {
 											+ " to start the game!");
 
 									if (playersLeft == 0) {
+										//TODO add runnable for arena countdown starts.
 										startArena(arenaName);
 									}
 								} else {
@@ -136,27 +137,23 @@ public class ArenaManager {
 				double joinX = fc.getDouble("arenas." + keys + ".joinX");
 				double joinY = fc.getDouble("arenas." + keys + ".joinY");
 				double joinZ = fc.getDouble("arenas." + keys + ".joinZ");
-				double redX = fc.getDouble("arenas." + keys + ".redX");
-				double redY = fc.getDouble("arenas." + keys + ".redY");
-				double redZ = fc.getDouble("arenas." + keys + ".redZ");
-				double blueX = fc.getDouble("arenas." + keys + ".blueX");
-				double blueY = fc.getDouble("arenas." + keys + ".blueY");
-				double blueZ = fc.getDouble("arenas." + keys + ".blueZ");
+				double endX = fc.getDouble("arenas." + keys + ".endX");
+				double endY = fc.getDouble("arenas." + keys + ".endY");
+				double endZ = fc.getDouble("arenas." + keys + ".endZ");
 				int maxPlayers = fc.getInt("arenas." + keys + ".maxPlayer");
 
-				Location joinLocation = new Location(world, joinX, joinY, joinZ);
-				Location redLocation = new Location(world, redX, redY, redZ);
-				Location blueLocation = new Location(world, blueX, blueY, blueZ);
+				Location startLocation = new Location(world, joinX, joinY, joinZ);
+				Location endLocation = new Location(world, endX, endY, endZ);
+				
 				@SuppressWarnings("unused")
-				Arena arena = new Arena(keys, joinLocation, redLocation,
-						blueLocation, maxPlayers);
+				Arena arena = new Arena(keys, startLocation, endLocation, maxPlayers);
 			}
 		}
 	}
 
 	public void createArena(String arenaName, int maxPlayers) {
 		@SuppressWarnings("unused")
-		Arena arena = new Arena(arenaName, null, null, null, maxPlayers);
+		Arena arena = new Arena(arenaName, null, null, maxPlayers);
 		ConfigurationAPI.getConfig(plugin, "arenas.yml").set(
 				"arenas." + arenaName, null);
 		String path = "arenas." + arenaName + ".";
