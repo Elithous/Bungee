@@ -15,7 +15,7 @@ public class Arena {
 public static ArrayList<Arena> arenaObjects = new ArrayList<Arena>();
 
 //Some fields we want each Arena object to store:
-private Location joinLocation, startLocation, endLocation; //Some general arena locations
+private Location startLocation, endLocation; //Some general arena locations
 
 private String name; //Arena name
 private ArrayList<String> players = new ArrayList<String>(); //And arraylist of players name
@@ -29,7 +29,6 @@ private boolean inGame = false; //Boolean to determine if an Arena is ingame or 
 public Arena (String arenaName, Location joinLocation, Location startLocation, Location endLocation, int maxPlayers) { //So basicly: Arena myArena = new Arena("My Arena", joinLocation, startLocation, endLocation, 17)
 //Lets initalize it all:
 this.name = arenaName;
-this.joinLocation = joinLocation;
 this.startLocation = startLocation;
 this.endLocation = endLocation;
 this.maxPlayers = maxPlayers;
@@ -37,15 +36,6 @@ this.maxPlayers = maxPlayers;
 //Now lets add this object to the list of objects:
 arenaObjects.add(this);
 
-}
-
-//Now for some Getters and Setters, so with our arena object, we can use special methods:
-public Location getJoinLocation() {
-return this.joinLocation;
-}
-
-public void setJoinLocation(Location joinLocation) {
-this.joinLocation = joinLocation;
 }
 
 public Location getStartLocation() {

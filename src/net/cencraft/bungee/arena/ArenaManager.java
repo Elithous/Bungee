@@ -2,22 +2,21 @@ package net.cencraft.bungee.arena;
 
 import java.util.ArrayList;
 
+import net.cencraft.bungee.main.Main;
+import net.cencraft.bungee.util.ConfigurationAPI;
+import net.cencraft.bungee.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
 
 public class ArenaManager {
 	private static ArenaManager am = new ArenaManager();
-
+	JavaPlugin plugin = Main.getJavaPlugin();
 	public static ArenaManager getManager() {
 		return am;
 	}
@@ -35,16 +34,14 @@ public class ArenaManager {
 
 		if (getArena(arenaName) != null) {
 			Arena arena = getArena(arenaName);
-			if (arena.getRedLocation() != null) {
-				if (arena.getJoinLocation() != null) {
-					if (arena.getBlueLocation() != null) {
+				if (arena.getStartLocation() != null && arena.getEndLocation() != null) {
 						if (!arena.isFull()) {
 							if (!arena.isInGame()) {
 								if (!arena.getPlayers().contains(
 										player.getName())) {
 									player.setHealth(20.0);
 									player.setFireTicks(0);
-									player.teleport(arena.getJoinLocation());
+									player.teleport(arena.getStartLocation());
 									arena.getPlayers().add(player.getName());
 									int playersLeft = arena.getMaxPlayers()
 											- arena.getPlayers().size();
@@ -72,18 +69,10 @@ public class ArenaManager {
 									+ "§4The arena you are looking for is currently full!");
 						}
 					} else {
-						Util.sendMessage(player,
-								"§4This arena was not setup right. Contact an admin.");
-					}
-				} else {
 					Util.sendMessage(player,
 							"§4This arena was not setup right. Contact an admin.");
 				}
 			} else {
-				Util.sendMessage(player,
-						"§4This arena was not setup right. Contact an admin.");
-			}
-		} else {
 			player.sendMessage(ChatColor.RED
 					+ "§4The arena you are looking for could not be found!");
 		}
@@ -95,29 +84,7 @@ public class ArenaManager {
 		if (getArena(arenaName) != null) {
 			Arena arena = getArena(arenaName);
 			if (arena.getPlayers().contains(player.getName())) {
-				player.setHealth(20.0);
-				player.setFireTicks(0);
-				player.setSaturation(10);
-				player.getInventory().setHelmet(new ItemStack(Material.AIR));
-				player.teleport(arena.getRedLocation());
-				arena.getPlayers().remove(player.getName());
-				World world = Bukkit.getWorld("world");
-				String path = "Player." + player.getName() + ".";
-				double commandX = ConfigurationAPI.getConfig(plugin,
-						"players.yml").getInt(path + "CommandX");
-				double commandY = ConfigurationAPI.getConfig(plugin,
-						"players.yml").getInt(path + "CommandY");
-				double commandZ = ConfigurationAPI.getConfig(plugin,
-						"players.yml").getInt(path + "CommandZ");
-				Location endloc = new Location(world, commandX, commandY,
-						commandZ);
-				player.teleport(endloc);
-				player.getInventory().clear();
-				Util.sendMessage(player, "Removed from arena!");
-				arena.sendMessage(ChatColor.BLUE + player.getName()
-						+ " has left the Arena! There are "
-						+ arena.getPlayers().size()
-						+ " players currently left!");
+				
 			} else {
 				player.sendMessage(ChatColor.RED
 						+ "Your not in the arena you're looking for!");
@@ -132,23 +99,12 @@ public class ArenaManager {
 	public void startArena(String arenaName) {
 
 		if (getArena(arenaName) != null) {
+			//declare arena, send message, set in game
 			Arena arena = getArena(arenaName);
 			arena.sendMessage(ChatColor.GOLD + "Paintball has BEGUN!");
 			arena.setInGame(true);
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			objective.setDisplayName("§ePaintBall");
-			objective.getScore(Bukkit.getOfflinePlayer("§4Red")).setScore(0);
-			objective.getScore(Bukkit.getOfflinePlayer("§bBlue")).setScore(0);
-			ItemStack snowball = new ItemStack(Material.SNOW_BALL, 64);
-
-			for (String s : arena.getPlayers()) {
-				Player player = Bukkit.getPlayer(s);
-				player.setSaturation(10000);
-				// TODO add method for seletcing what team players go on.
-				player.setGameMode(GameMode.SURVIVAL);
-				player.getInventory().addItem(snowball);
-				Bukkit.getPlayer(s).teleport(arena.getRedLocation());
-				player.getInventory().setHelmet(new ItemStack(Material.GLASS));
+			for (@SuppressWarnings("unused") String s : arena.getPlayers()) {
+				//stuff for each player
 			}
 		}
 	}
@@ -163,11 +119,7 @@ public class ArenaManager {
 			for (String s : players) {
 				Player player = Bukkit.getPlayer(s);
 				player.getInventory().clear();
-				player.teleport(arena.getJoinLocation());
-				player.setGameMode(GameMode.SURVIVAL);
-				player.setSaturation(100000);
-				player.setHealth(20.0);
-				player.setFireTicks(0);
+				player.teleport(arena.getEndLocation());
 				arena.getPlayers().remove(s);
 			}
 			arena.setInGame(false);
@@ -213,36 +165,25 @@ public class ArenaManager {
 		ConfigurationAPI.saveConfig(plugin, "arenas.yml");
 	}
 
-	public void SetRed(String arenaName, Location redLocation) {
+	public void SetEnd(String arenaName, Location joinLocation) {
 		FileConfiguration fc = ConfigurationAPI.getConfig(plugin, "arenas.yml");
 		String path = "arenas." + arenaName + ".";
-		fc.set(path + "redX", redLocation.getX());
-		fc.set(path + "redY", redLocation.getY());
-		fc.set(path + "redZ", redLocation.getZ());
+		fc.set(path + "endX", joinLocation.getX());
+		fc.set(path + "endY", joinLocation.getY());
+		fc.set(path + "endZ", joinLocation.getZ());
 		Arena arena = getArena(arenaName);
-		arena.setRedLocation(redLocation);
+		arena.setEndLocation(joinLocation);
 		ConfigurationAPI.saveConfig(plugin, "arenas.yml");
 	}
 
-	public void SetJoin(String arenaName, Location joinLocation) {
+	public void SetStart(String arenaName, Location blueLocation) {
 		FileConfiguration fc = ConfigurationAPI.getConfig(plugin, "arenas.yml");
 		String path = "arenas." + arenaName + ".";
-		fc.set(path + "joinX", joinLocation.getX());
-		fc.set(path + "joinY", joinLocation.getY());
-		fc.set(path + "joinZ", joinLocation.getZ());
+		fc.set(path + "startX", blueLocation.getX());
+		fc.set(path + "startY", blueLocation.getY());
+		fc.set(path + "startZ", blueLocation.getZ());
 		Arena arena = getArena(arenaName);
-		arena.setJoinLocation(joinLocation);
-		ConfigurationAPI.saveConfig(plugin, "arenas.yml");
-	}
-
-	public void SetBlue(String arenaName, Location blueLocation) {
-		FileConfiguration fc = ConfigurationAPI.getConfig(plugin, "arenas.yml");
-		String path = "arenas." + arenaName + ".";
-		fc.set(path + "blueX", blueLocation.getX());
-		fc.set(path + "blueY", blueLocation.getY());
-		fc.set(path + "blueZ", blueLocation.getZ());
-		Arena arena = getArena(arenaName);
-		arena.setBlueLocation(blueLocation);
+		arena.setStartLocation(blueLocation);
 		ConfigurationAPI.saveConfig(plugin, "arenas.yml");
 	}
 
