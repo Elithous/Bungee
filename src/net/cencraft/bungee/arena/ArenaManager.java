@@ -31,7 +31,7 @@ public class ArenaManager {
 	}
 
 	public void addPlayers(Player player, String arenaName) {
-
+// Test push
 		if (getArena(arenaName) != null) {
 			Arena arena = getArena(arenaName);
 				if (arena.getStartLocation() != null && arena.getEndLocation() != null) {
